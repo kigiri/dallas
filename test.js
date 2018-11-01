@@ -1,9 +1,9 @@
 import { deepStrictEqual as test } from 'assert'
-import { dallasWithoutMemo } from './index.js'
+import { classeNoMemo } from './index.js'
 
 const pass = _ => _
 const applyDallas = (options, props) =>
-  DallasWithoutMemo(options, pass)(Object.freeze(props))
+  classeNoMemo(options, pass)(Object.freeze(props))
 
 /* APPLY CLASSNAME */
 console.log('it should apply className')

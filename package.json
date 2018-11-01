@@ -9,7 +9,7 @@
   "peerDependencies": {
     "react": ">= 16.7.0"
   },
-  "keywords": ["react", "classes", "css", "className"],
+  "keywords": ["react", "classes", "css", "compose", "className"],
   "author": "kigiri",
   "license": "MIT",
   "devDependencies": {

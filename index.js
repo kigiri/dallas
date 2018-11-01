@@ -2,7 +2,7 @@ import React, { memo, createElement } from 'react'
 
 const toDiv = props => createElement('div', props)
 const applyClassName = (a, b) => (a && b ? `${a} ${b}` : b || a)
-export const dallasWithoutMemo = (options, render) => {
+export const classeNoMemo = (options, render) => {
   if (!render) {
     render = toDiv
   } else if (typeof render !== 'function') {
@@ -84,7 +84,6 @@ export const dallasWithoutMemo = (options, render) => {
 // forward react exports
 export * from 'react'
 
-export const dallas = (options, render) =>
-  memo(dallasWithoutMemo(options, render))
+export const classe = (options, render) => memo(classeNoMemo(options, render))
 
-dallas.withOutMemo = dallasWithoutMemo
+classe.noMemo = classeNoMemo

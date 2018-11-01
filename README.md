@@ -11,15 +11,15 @@ npm i dallas react
 
 ## API
 
-The api provide a `dallas` wrapper function.
+The api provide a `classe` wrapper function.
 
 ### Basic usage
 
 ```js
-import { React, dallas } from 'dallas'
-// dallas takes 2 arguments
+import { React, classe } from 'classe'
+// classe takes 2 arguments
 // an option and a render function
-const Button = dallas('my-button', props => <button {...props} />)
+const Button = classe('my-button', props => <button {...props} />)
 
 // this JSX:
 <Button className='big' />
@@ -32,11 +32,11 @@ const Button = dallas('my-button', props => <button {...props} />)
 ### You can pass in an array of classNames
 
 ```js
-import { React, dallas } from 'dallas'
+import { React, classe } from 'dallas'
 
 import style from './Wrapper.module.css'
 
-const Wrapper = dallas([ 'container', style.Wrapper ])
+const Wrapper = classe([ 'container', style.Wrapper ])
 
 // This JSX
 <Wrapper />
@@ -54,7 +54,7 @@ all keys that have `strings` values genereate boolean flags as short hands for a
 
 ```js
 // options can be passed last or first.
-export const FlagClass = dallas({
+export const FlagClass = classe({
   disabled: 'dis',
   selected: 'bp-selected',
 })
@@ -78,7 +78,7 @@ A class matcher is a switch, it use a string or a function for more complex logi
 
 ```js
 // options can be passed last or first.
-export const Matcher = dallas({
+export const Matcher = classe({
   color: {
     info: 'color-blue',
     warning: 'color-yellow',
@@ -103,3 +103,6 @@ export const Matcher = dallas({
 <div class="available" />
 ```
 
+The render functions are `memo` by default,
+if you want not to `memo` the function, use
+either `classe.noMemo` or `classeNoMemo`.
