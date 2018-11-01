@@ -1,0 +1,27 @@
+{
+  "name": "dallas",
+  "version": "1.0.0",
+  "description": "A wrapper for applying classes",
+  "main": "index.js",
+  "scripts": {
+    "test": "node -r esm test.js"
+  },
+  "peerDependencies": {
+    "react": ">= 16.7.0"
+  },
+  "keywords": ["react", "classes", "css", "className"],
+  "author": "kigiri",
+  "license": "MIT",
+  "devDependencies": {
+    "esm": "^3.0.84",
+    "react": "^16.7.0-alpha.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kigiri/dallas.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kigiri/dallas/issues"
+  },
+  "homepage": "https://github.com/kigiri/dallas#readme"
+}
