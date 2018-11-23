@@ -2,13 +2,7 @@ import React, { memo, createElement } from 'react'
 
 const toDiv = props => createElement('div', props)
 const applyClassName = (a, b) => (a && b ? `${a} ${b}` : b || a)
-export const classeNoMemo = (options, render) => {
-  if (!render) {
-    render = toDiv
-  } else if (typeof render !== 'function') {
-    throw Error(`render argument must be a function`)
-  }
-
+const prepareOptions = options => {
   if (typeof options === 'string') {
     options = { className: options }
   } else if (Array.isArray(options)) {
@@ -23,7 +17,7 @@ export const classeNoMemo = (options, render) => {
   const matcher = {}
   let hasKey = false
   for (const [k, v] of Object.entries(options)) {
-    if (k === 'className' || k === 'classNames') continue
+    if (k === 'className' || k === 'classNames' || k === 'consume') continue
     if (!v) continue
     switch (typeof v) {
       case 'string':
@@ -42,7 +36,10 @@ export const classeNoMemo = (options, render) => {
         break
     }
   }
+  return { matcher, flags, hasKey, consume: options.consume, baseClassName }
+}
 
+const dallas = ({ matcher, flags, hasKey, consume, baseClassName }, render) => {
   if (!hasKey) {
     // simple case, no flags or matcher specified
     return props => {
@@ -73,7 +70,7 @@ export const classeNoMemo = (options, render) => {
 
     if (className === props.className) return render(props)
     const newProps = {}
-    if (options.consume) {
+    if (consume) {
       // consume props that match a flag
       for (const key of keys) {
         if (!flags[key] && !matcher[key]) {
@@ -90,21 +87,36 @@ export const classeNoMemo = (options, render) => {
   }
 }
 
+export const classeNoMemo = (options, render) => {
+  if (!render) {
+    render = toDiv
+  } else if (typeof render !== 'function') {
+    throw Error(`render argument must be a function`)
+  }
+  return dallas(prepareOptions(options), render)
+}
+
 // forward react exports
 export * from 'react'
 
 export const classe = (options, render) => memo(classeNoMemo(options, render))
-export const wrapper = (classes, classFlags) =>
-  new Proxy(
-    render => {
-      if (render) return classe(classes, render)
-      const i = classes.length - 1
-      const nodeType = classes[i]
-      return classe(
-        { classFlags, classNames: classes.slice(0, i), consume: true },
-        props => createElement(nodeType, props),
-      )
-    },
-    { get: (_, key) => wrapper([...classes, classFlags[key]], classFlags) },
-  )
+export const wrapper = options => {
+  const { baseClassName, ...opts } = prepareOptions(options)
+  const stepper = classes =>
+    new Proxy(
+      render => {
+        if (render) {
+          return dallas({ ...opts, baseClassName: classes.join(' ') }, render)
+        }
+        const i = classes.length - 1
+        const nodeType = classes[i]
+        return dallas(
+          { ...opts, baseClassName: classes.slice(0, i).join(' ') },
+          props => createElement(nodeType, props),
+        )
+      },
+      { get: (_, key) => stepper([...classes, options[key] || key]) },
+    )
+  return stepper(baseClassName ? [baseClassName] : [])
+}
 classe.noMemo = classeNoMemo
