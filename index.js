@@ -94,5 +94,17 @@ export const classeNoMemo = (options, render) => {
 export * from 'react'
 
 export const classe = (options, render) => memo(classeNoMemo(options, render))
-
+export const wrapper = (classes, classFlags) =>
+  new Proxy(
+    render => {
+      if (render) return classe(classes, render)
+      const i = classes.length - 1
+      const nodeType = classes[i]
+      return classe(
+        { classFlags, classNames: classes.slice(0, i), consume: true },
+        props => createElement(nodeType, props),
+      )
+    },
+    { get: (_, key) => wrapper([...classes, classFlags[key]], classFlags) },
+  )
 classe.noMemo = classeNoMemo
