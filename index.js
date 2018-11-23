@@ -60,11 +60,11 @@ const dallas = ({ matcher, flags, hasKey, consume, baseClassName }, render) => {
 
     const keys = Object.keys(props)
     for (const key of keys) {
-      const value = props[key]
-      className = applyClassName(className, flags[key])
       const match = matcher[key]
       if (match) {
-        className = applyClassName(className, match(value))
+        className = applyClassName(className, match(props[key]))
+      } else if (props[key]) {
+        className = applyClassName(className, flags[key])
       }
     }
 
