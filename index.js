@@ -73,8 +73,17 @@ export const classeNoMemo = (options, render) => {
 
     if (className === props.className) return render(props)
     const newProps = {}
-    for (const key of keys) {
-      newProps[key] = props[key]
+    if (options.consume) {
+      // consume props that match a flag
+      for (const key of keys) {
+        if (!flags[key] && !matcher[key]) {
+          newProps[key] = props[key]
+        }
+      }
+    } else {
+      for (const key of keys) {
+        newProps[key] = props[key]
+      }
     }
     newProps.className = className
     return render(newProps)
