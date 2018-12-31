@@ -85,6 +85,16 @@ test(applyDallas({ x: 'x', d: 'd' }, { d: true, className: 'a' }), {
 console.log('it should not modify the object if no flags are applied')
 test(applyDallas({ x: 'x', d: 'd' }, expected) === expected, true)
 
+/* TEST CONSUME OPTS*/
+console.log('consume options should not forward props')
+test(
+  applyDallas(
+    { x: 'x', d: 'd', consume: true },
+    { x: true, d: true, className: 'a' },
+  ),
+  { className: 'a x d' },
+)
+
 /* APPLY MATCHER */
 console.log('it should apply matcher')
 test(applyDallas(matcher, { status: 'online' }), {
