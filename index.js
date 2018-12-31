@@ -53,6 +53,7 @@ const dallas = ({ matcher, flags, hasKey, consume, baseClassName }, render) => {
   }
 
   return props => {
+    let disabled
     let className =
       props.className === baseClassName
         ? baseClassName
@@ -65,6 +66,9 @@ const dallas = ({ matcher, flags, hasKey, consume, baseClassName }, render) => {
         className = applyClassName(className, match(props[key]))
       } else if (props[key]) {
         className = applyClassName(className, flags[key])
+      } else {
+        disabled || (disabled = new Set())
+        disabled.add(flags[key])
       }
     }
 
@@ -82,7 +86,17 @@ const dallas = ({ matcher, flags, hasKey, consume, baseClassName }, render) => {
         newProps[key] = props[key]
       }
     }
-    newProps.className = className
+
+    if (disabled) {
+      const classSet = new Set(className.split(' '))
+      for (const disabledClass of disabled) {
+        classSet.delete(disabledClass)
+      }
+      newProps.className = [...classSet].join(' ')
+    } else {
+      newProps.className = className
+    }
+
     return render(newProps)
   }
 }

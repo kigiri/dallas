@@ -1,9 +1,25 @@
 import { deepStrictEqual as test } from 'assert'
-import { classeNoMemo } from './index.js'
+import { classeNoMemo, wrapper } from './index.js'
+
+// data
+const classNames = ['hello', 'world']
+const expected = { className: classNames.join(' ') }
+const matcher = { status: { online: 'on', offline: 'off' } }
+const allOptions = {
+  classNames,
+  disabled: 'is-disabled',
+  color: {
+    primary: 'color-blue',
+    warning: 'color-orange',
+    error: 'color-red',
+  },
+}
 
 const pass = _ => _
 const applyDallas = (options, props) =>
   classeNoMemo(options, pass)(Object.freeze(props))
+const Flags = wrapper({ hidden: 'opacity-0', ...allOptions })
+const flagged = Flags.disabled.hidden(_ => _)
 
 /* APPLY CLASSNAME */
 console.log('it should apply className')
@@ -19,8 +35,6 @@ test(applyDallas('hello', { className: 'world' }), {
 
 /* APPLY CLASSNAMES */
 console.log('it should apply classNames')
-const classNames = ['hello', 'world']
-const expected = { className: classNames.join(' ') }
 test(applyDallas({ classNames }, {}), expected)
 
 console.log('it should apply classNames (using array shorthand)')
@@ -73,7 +87,6 @@ test(applyDallas({ x: 'x', d: 'd' }, expected) === expected, true)
 
 /* APPLY MATCHER */
 console.log('it should apply matcher')
-const matcher = { status: { online: 'on', offline: 'off' } }
 test(applyDallas(matcher, { status: 'online' }), {
   status: 'online',
   className: 'on',
@@ -89,16 +102,6 @@ console.log('it should not change the props when not matching')
 test(applyDallas(matcher, expected) === expected, true)
 
 /* COMBINE ALL */
-const allOptions = {
-  classNames,
-  disabled: 'is-disabled',
-  color: {
-    primary: 'color-blue',
-    warning: 'color-orange',
-    error: 'color-red',
-  },
-}
-
 console.log('we shoud be able to combine all the options')
 test(
   applyDallas(allOptions, {
@@ -111,3 +114,16 @@ test(
 
 console.log('if should return the same props if no changes were nescessary')
 test(applyDallas(allOptions, expected) === expected, true)
+
+/* HANDLE WRAPPER FLAGS */
+console.log('A flagged component has default classes')
+test(flagged({}).className, 'hello world is-disabled opacity-0')
+
+console.log('A flagged component can handle new props')
+test(
+  flagged({ color: 'primary' }).className,
+  'hello world is-disabled opacity-0 color-blue',
+)
+
+console.log('we should be able to disabled a flag by passing `false`')
+test(flagged({ disabled: false }).className, 'hello world opacity-0')
