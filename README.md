@@ -106,3 +106,12 @@ export const Matcher = classe({
 The render functions are `memo` by default,
 if you want not to `memo` the function, use
 either `classe.noMemo` or `classeNoMemo`.
+
+### Refs
+
+A special `elemRef` props is checked to forward ref to the rendered element.
+
+```js
+const ref = useRef(null)
+<Matcher elemRef={ref} />
+```

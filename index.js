@@ -97,6 +97,11 @@ const dallas = ({ matcher, flags, hasKey, consume, baseClassName }, render) => {
       newProps.className = className
     }
 
+    if (newProps.elemRef) {
+      newProps.ref = newProps.elemRef
+      delete newProps.elemRef
+    }
+
     return render(newProps)
   }
 }
