@@ -2,9 +2,11 @@
   "name": "dallas",
   "version": "3.0.0",
   "description": "A wrapper for applying classes",
-  "main": "index.js",
+  "main": "index.build.js",
+  "module": "index.js",
   "scripts": {
-    "test": "node -r esm test.js"
+    "test": "node -r esm test.js",
+    "build": "schwarzy ."
   },
   "peerDependencies": {
     "react": ">= 16.7.0"
@@ -20,7 +22,8 @@
   "license": "MIT",
   "devDependencies": {
     "esm": "^3.0.84",
-    "react": "^16.7.0-alpha.0"
+    "react": "^16.7.0-alpha.0",
+    "schwarzy": "0.0.3"
   },
   "repository": {
     "type": "git",
