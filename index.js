@@ -72,7 +72,6 @@ const dallas = ({ matcher, flags, hasKey, consume, baseClassName }, render) => {
       }
     }
 
-    if (className === props.className) return render(props)
     const newProps = {}
     if (consume) {
       // consume props that match a flag
@@ -87,14 +86,16 @@ const dallas = ({ matcher, flags, hasKey, consume, baseClassName }, render) => {
       }
     }
 
-    if (disabled) {
-      const classSet = new Set(className.split(' '))
-      for (const disabledClass of disabled) {
-        classSet.delete(disabledClass)
+    if (className) {
+      if (disabled) {
+        const classSet = new Set(className.split(' '))
+        for (const disabledClass of disabled) {
+          classSet.delete(disabledClass)
+        }
+        newProps.className = [...classSet].join(' ')
+      } else {
+        newProps.className = className
       }
-      newProps.className = [...classSet].join(' ')
-    } else {
-      newProps.className = className
     }
 
     if (newProps.elemRef) {
@@ -131,10 +132,10 @@ export const wrapper = options => {
         const nodeType = classes[i]
         return dallas(
           { ...opts, baseClassName: classes.slice(0, i).join(' ') },
-          props => createElement(nodeType, props),
+          props => createElement(nodeType, props)
         )
       },
-      { get: (_, key) => stepper([...classes, options[key] || key]) },
+      { get: (_, key) => stepper([...classes, options[key] || key]) }
     )
   return stepper(baseClassName ? [baseClassName] : [])
 }
