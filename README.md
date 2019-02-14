@@ -107,6 +107,48 @@ The render functions are `memo` by default,
 if you want not to `memo` the function, use
 either `classe.noMemo` or `classeNoMemo`.
 
+#### option `consume (Boolean)`
+
+Passing the consume option to `true` will remove props that are used for flags.
+
+#### option `groups (RegExp)`
+
+A `RegExp` used to match exclusive props together
+
+```js
+export const Matcher = classe({
+  orange1: 'light-orange',
+  orange2: 'orange',
+  orange3: 'dark-orange',
+  groups: /^([a-z]+)([0-9]+)$/i,
+})
+
+// this JSX
+<Matcher orange="1" />
+// render this dom
+<div class="light-orange" />
+
+// this JSX
+<Matcher orange3 />
+// render this dom
+<div class="dark-orange" />
+
+// this JSX
+<Matcher orange={2} />
+// render this dom
+<div class="orange" />
+```
+
+Groups are mutualy exclusives so once flags are matched together, only the last
+one will be applied:
+
+```js
+// this JSX
+<Matcher orange1 orange2 orange3 />
+// render this dom
+<div class="dark-orange" />
+```
+
 ### Refs
 
 A special `elemRef` props is checked to forward ref to the rendered element.
