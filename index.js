@@ -1,5 +1,6 @@
 import React, { memo, createElement } from 'react'
 
+const E = Symbol('exclude')
 const toDiv = props => createElement('div', props)
 const applyClassName = (a, b) => (a && b ? `${a} ${b}` : b || a)
 const prepareOptions = options => {
@@ -15,31 +16,53 @@ const prepareOptions = options => {
 
   const flags = {}
   const matcher = {}
+  const groups = {}
+  const excludes = {}
   let hasKey = false
+
   for (const [k, v] of Object.entries(options)) {
     if (k === 'className' || k === 'classNames' || k === 'consume') continue
     if (!v) continue
     switch (typeof v) {
       case 'string':
-        flags[k] = v
         hasKey = true
+        if (options.groups && options.groups.test(k)) {
+          const [, base, index] = k.split(options.groups)
+          const group = groups[base] || (groups[base] = { [E]: new Set() })
+          excludes[k] = { value: v, set: group[E].add(v) }
+          group[index] = v
+          matcher[base] || (matcher[base] = key => group[key])
+        }
+
+        flags[k] = v
         break
       case 'function':
-        matcher[k] = v
         hasKey = true
+        matcher[k] = v
         break
       case 'object':
-        matcher[k] = value => v[value]
         hasKey = true
+        matcher[k] = key => v[key]
         break
       default:
         break
     }
   }
-  return { matcher, flags, hasKey, consume: options.consume, baseClassName }
+
+  return {
+    flags,
+    hasKey,
+    matcher,
+    excludes,
+    baseClassName,
+    consume: options.consume,
+  }
 }
 
-const dallas = ({ matcher, flags, hasKey, consume, baseClassName }, render) => {
+const dallas = (
+  { matcher, flags, hasKey, consume, baseClassName, excludes },
+  render,
+) => {
   if (!hasKey) {
     // simple case, no flags or matcher specified
     return props => {
@@ -62,6 +85,14 @@ const dallas = ({ matcher, flags, hasKey, consume, baseClassName }, render) => {
     const keys = Object.keys(props)
     for (const key of keys) {
       const match = matcher[key]
+      const exclude = excludes[key]
+      if (exclude) {
+        disabled || (disabled = new Set())
+        for (const excludedClassName of exclude.set) {
+          disabled.add(excludedClassName)
+        }
+        disabled.delete(exclude.value)
+      }
       if (match) {
         className = applyClassName(className, match(props[key]))
       } else if (props[key]) {
@@ -132,10 +163,10 @@ export const wrapper = options => {
         const nodeType = classes[i]
         return dallas(
           { ...opts, baseClassName: classes.slice(0, i).join(' ') },
-          props => createElement(nodeType, props)
+          props => createElement(nodeType, props),
         )
       },
-      { get: (_, key) => stepper([...classes, options[key] || key]) }
+      { get: (_, key) => stepper([...classes, options[key] || key]) },
     )
   return stepper(baseClassName ? [baseClassName] : [])
 }
