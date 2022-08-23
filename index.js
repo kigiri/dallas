@@ -1,7 +1,7 @@
 import React, { memo, createElement } from 'react'
 
 const E = Symbol('exclude')
-const toDiv = props => createElement('div', props)
+const Div = props => createElement('div', props)
 const applyClassName = (a, b) => (a && b ? `${a} ${b}` : b || a)
 const prepareOptions = options => {
   if (typeof options === 'string') {
@@ -138,36 +138,41 @@ const dallas = (
   }
 }
 
-export const classeNoMemo = (options, render) => {
+const withName = (displayName, comp) => {
+  comp.displayName = displayName
+  return comp
+}
+
+export const classe = (options, render, displayName) => {
   if (!render) {
-    render = toDiv
+    render = Div
   } else if (typeof render !== 'function') {
     throw Error(`render argument must be a function`)
   }
-  return dallas(prepareOptions(options), render)
+  displayName || (displayName = render.displayName || render.name)
+  return withName(displayName, dallas(prepareOptions(options), render))
 }
 
 // forward react exports
 export * from 'react'
 
-export const classe = (options, render) => memo(classeNoMemo(options, render))
 export const wrapper = options => {
   const { baseClassName, ...opts } = prepareOptions(options)
   const stepper = classes =>
     new Proxy(
       render => {
         if (render) {
-          return dallas({ ...opts, baseClassName: classes.join(' ') }, render)
+          const comp = dallas({ ...opts, baseClassName: classes.join(' ') }, render)
+          return withName(render.displayName || render.name, comp)
         }
         const i = classes.length - 1
         const nodeType = classes[i]
         return dallas(
           { ...opts, baseClassName: classes.slice(0, i).join(' ') },
-          props => createElement(nodeType, props),
+          withName(nodeType, props => createElement(nodeType, props)),
         )
       },
       { get: (_, key) => stepper([...classes, options[key] || key]) },
     )
   return stepper(baseClassName ? [baseClassName] : [])
 }
-classe.noMemo = classeNoMemo

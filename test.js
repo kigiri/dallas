@@ -157,3 +157,12 @@ test(applyDallas(grouped, { mb1: true, mb2: true }), { className: grouped.mb2 })
 
 console.log('grouped values can be set with index')
 test(applyDallas(grouped, { mb: 3 }), { className: grouped.mb3 })
+
+console.log('it should use keep component name')
+test(classeNoMemo({}, pass).displayName, 'pass')
+
+console.log('default name should be Div')
+test(classeNoMemo({}).displayName, 'Div')
+
+console.log('we can specify another name')
+test(classeNoMemo({}, pass, 'Hey').displayName, 'Hey')
