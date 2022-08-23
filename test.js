@@ -1,5 +1,5 @@
 import { deepStrictEqual as test } from 'assert'
-import { classeNoMemo, wrapper } from './index.js'
+import { classe, wrapper } from './index.js'
 
 // data
 const classNames = ['hello', 'world']
@@ -18,7 +18,7 @@ const allOptions = {
 
 const pass = _ => _
 const applyDallas = (options, props) =>
-  classeNoMemo(options, pass)(Object.freeze(props))
+  classe(options, pass)(Object.freeze(props))
 
 /* APPLY CLASSNAME */
 console.log('it should apply className')
@@ -159,10 +159,10 @@ console.log('grouped values can be set with index')
 test(applyDallas(grouped, { mb: 3 }), { className: grouped.mb3 })
 
 console.log('it should use keep component name')
-test(classeNoMemo({}, pass).displayName, 'pass')
+test(classe({}, pass).displayName, 'pass')
 
 console.log('default name should be Div')
-test(classeNoMemo({}).displayName, 'Div')
+test(classe({}).displayName, 'Div')
 
 console.log('we can specify another name')
-test(classeNoMemo({}, pass, 'Hey').displayName, 'Hey')
+test(classe({}, pass, 'Hey').displayName, 'Hey')

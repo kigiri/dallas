@@ -1,4 +1,4 @@
-import React, { memo, createElement } from 'react'
+import React, { createElement } from 'react'
 
 const E = Symbol('exclude')
 const Div = props => createElement('div', props)
@@ -167,10 +167,10 @@ export const wrapper = options => {
         }
         const i = classes.length - 1
         const nodeType = classes[i]
-        return dallas(
+        return withName(nodeType, dallas(
           { ...opts, baseClassName: classes.slice(0, i).join(' ') },
-          withName(nodeType, props => createElement(nodeType, props)),
-        )
+          props => createElement(nodeType, props),
+        ))
       },
       { get: (_, key) => stepper([...classes, options[key] || key]) },
     )
